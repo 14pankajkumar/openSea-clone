@@ -8,6 +8,7 @@ import { Collection } from '../../graphql/typing'
 import { CgWebsite } from 'react-icons/cg'
 import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
 import { HiDotsVertical } from 'react-icons/hi'
+import Head from 'next/head'
 
 interface Props {
   collectionId: string
@@ -47,7 +48,10 @@ const Collection = ({ collectionId, collection }: Props) => {
   const nftModule = useMemo(() => {
     if (!provider) return
 
-    const sdk = new ThirdwebSDK(provider.getSigner())
+    const sdk = new ThirdwebSDK(
+      provider.getSigner(),
+      // 'https://eth-rinkeby.alchemyapi.io/v2/cfg31c4R1I1t4bpE182-PAmrDBSLzLsZ'
+    )
 
     return sdk.getNFTModule(collectionId)
   }, [provider])
@@ -56,17 +60,20 @@ const Collection = ({ collectionId, collection }: Props) => {
   useEffect(() => {
     if (!nftModule) return
     ;(async () => {
-      await nftModule.getAll().then((res) => setNfts(res))
+      await nftModule.getAll().then((res: any) => setNfts(res))
     })()
   }, [nftModule])
 
   const marketPlaceModule = useMemo(() => {
     if (!provider) return
 
-    const sdk = new ThirdwebSDK(provider.getSigner())
+    const sdk = new ThirdwebSDK(
+      provider.getSigner(),
+      // 'https://eth-rinkeby.alchemyapi.io/v2/cfg31c4R1I1t4bpE182-PAmrDBSLzLsZ'
+    )
 
     return sdk.getMarketplaceModule(
-      '0x68A9cA564695816F2ada98A803082d9e00A7A4C6'
+      '0x8E804b169ea3895A2bC1Cd55a8A70DC7bdc8e47E'
     )
   }, [provider])
 
@@ -74,18 +81,23 @@ const Collection = ({ collectionId, collection }: Props) => {
   useEffect(() => {
     if (!marketPlaceModule) return
     ;(async () => {
-      await marketPlaceModule.getAllListings().then((res) => setListings(res))
+      await marketPlaceModule
+        .getAllListings()
+        .then((res: any) => setListings(res))
     })()
   }, [marketPlaceModule])
 
   return (
     <div className="overflow-hidden">
+      <Head>
+        <title>{collection?.title}</title>
+      </Head>
       <Header />
       <div className={style.bannerImageContainer}>
         <img
           className={style.bannerImage}
           src={
-            collection?.bannerImage.url
+            collection?.bannerImage?.url
               ? collection.bannerImage.url
               : 'https://via.placeholder.com/200'
           }
@@ -97,7 +109,7 @@ const Collection = ({ collectionId, collection }: Props) => {
           <img
             className={style.profileImg}
             src={
-              collection?.profileImage.url
+              collection?.profileImage?.url
                 ? collection.profileImage.url
                 : 'https://via.placeholder.com/200'
             }
@@ -134,7 +146,7 @@ const Collection = ({ collectionId, collection }: Props) => {
           <div className={style.createdBy}>
             Created by{' '}
             <span className="cursor-pointer text-[#2081e2]">
-              {collection?.nftcreatedby.username}
+              {collection?.nftcreatedby?.username}
             </span>
           </div>
         </div>
@@ -146,7 +158,7 @@ const Collection = ({ collectionId, collection }: Props) => {
             </div>
             <div className={style.collectionStat}>
               <div className={style.statValue}>
-                {collection?.owners ? collection.owners.username.length : ''}
+                {collection?.owners ? collection.owners?.username?.length : ''}
               </div>
               <div className={style.statName}>owners</div>
             </div>
@@ -178,7 +190,7 @@ const Collection = ({ collectionId, collection }: Props) => {
           <div className={style.description}>{collection?.description}</div>
         </div>
       </div>
-      <div className="flex flex-wrap ">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 md:grid-cols-3 lg:grid-cols-5">
         {nfts.map((nftItem, id) => (
           <NFTCard
             key={id}
@@ -195,8 +207,8 @@ const Collection = ({ collectionId, collection }: Props) => {
 export default Collection
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const collectionId = context.query.collectionId
-  const collection = await getMarketItems(collectionId)
+  const collectionId = context.query.collectionId || ''
+  const collection = (await getMarketItems(collectionId)) || []
   return {
     props: { collectionId, collection },
   }

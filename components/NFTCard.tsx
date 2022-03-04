@@ -7,7 +7,7 @@ import { Listings, NftItem } from '../graphql/typing'
 interface Props {
   nftItem: NftItem
   title: string
-  listings: [Listings]
+  listings: Listings[]
 }
 
 const style = {
@@ -29,18 +29,26 @@ const style = {
 
 const NFTCard = ({ nftItem, title, listings }: Props) => {
   const [isListed, setIsListed] = useState(false)
-  const [price, setPrice] = useState(0)
+  const [price, setPrice] = useState<number>(0)
 
   useEffect(() => {
     const listing = listings.find((listing) => listing.asset.id === nftItem.id)
     if (Boolean(listing)) {
       setIsListed(true)
-      setPrice(listing?.buyoutCurrencyValuePerToken.displayValue)
+      setPrice(Number(listing?.buyoutCurrencyValuePerToken.displayValue) || 0)
     }
   }, [listings, nftItem])
 
   return (
-    <div className={style.wrapper}>
+    <div
+      className={style.wrapper}
+      onClick={() => {
+        Router.push({
+          pathname: `/nfts/${nftItem.id}`,
+          query: { isListed: isListed },
+        })
+      }}
+    >
       <div className={style.imgContainer}>
         <img src={nftItem.image} className={style.nftImg} alt={nftItem.name} />
       </div>

@@ -45,7 +45,7 @@ export const getCreator = async (walletAddress: string) => {
 
 }
 
-export const getMarketItems = async (contractAddress: string) => {
+export const getMarketItems = async (contractAddress: string | string[]) => {
     const query = gql`
         query GetMarketItems($contractAddress: String!) {
             marketItems(where: {contractAddress: $contractAddress}) {
