@@ -1,5 +1,6 @@
 import { useWeb3 } from '@3rdweb/hooks'
 import { ThirdwebSDK } from '@3rdweb/sdk'
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useMemo, useState } from 'react'
 import {
@@ -68,6 +69,9 @@ const Nft = () => {
 
   return (
     <div>
+      <Head>
+        <title>{selectedNft?.name} - OpenSea Clone</title>
+      </Head>
       <Header />
       <div className={style.wrapper}>
         <div className={style.container}>

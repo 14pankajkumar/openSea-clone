@@ -25,7 +25,6 @@ const NFTImage = ({ selectedNft }: Props) => {
         </div>
       </div>
       <div>
-        {console.log(selectedNft, '🎆')}
         <img src={selectedNft?.image} />
       </div>
     </div>

@@ -90,7 +90,7 @@ const Collection = ({ collectionId, collection }: Props) => {
   return (
     <div className="overflow-hidden">
       <Head>
-        <title>{collection?.title}</title>
+        <title>{collection?.title} - OpenSea Clone</title>
       </Head>
       <Header />
       <div className={style.bannerImageContainer}>
